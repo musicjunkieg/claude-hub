@@ -7,6 +7,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"claude-hub/internal/config"
 )
 
 // ClaudeProcess represents a detected Claude process
@@ -23,13 +25,8 @@ type TerminalDetector struct {
 
 // NewTerminalDetector creates a new terminal detector
 func NewTerminalDetector() *TerminalDetector {
-	homeDir := os.Getenv("HOME")
-	if homeDir == "" {
-		homeDir = "/home/sprite"
-	}
-
 	return &TerminalDetector{
-		projectDir: filepath.Join(homeDir, ".claude", "projects", "-home-sprite"),
+		projectDir: config.Get().ClaudeProjectsDir,
 		ownPIDs:    make(map[int]bool),
 	}
 }

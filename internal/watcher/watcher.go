@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"sync"
 
+	"claude-hub/internal/config"
+
 	"github.com/fsnotify/fsnotify"
 )
 
@@ -26,7 +28,7 @@ type SessionWatcher struct {
 // NewSessionWatcher creates a new session watcher
 func NewSessionWatcher(sessionID, claudeUUID string) (*SessionWatcher, error) {
 	// Construct path to .jsonl file
-	projectDir := filepath.Join(os.Getenv("HOME"), ".claude", "projects", "-home-sprite")
+	projectDir := config.Get().ClaudeProjectsDir
 	filePath := filepath.Join(projectDir, claudeUUID+".jsonl")
 
 	// Check if file exists
