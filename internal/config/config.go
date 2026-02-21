@@ -38,7 +38,11 @@ func Get() *Config {
 func load() *Config {
 	homeDir := os.Getenv("HOME")
 	if homeDir == "" {
-		homeDir = "/home/sprite"
+		var err error
+		homeDir, err = os.UserHomeDir()
+		if err != nil {
+			homeDir = "/home/sprite"
+		}
 	}
 
 	workDir := os.Getenv("CLAUDE_WORK_DIR")

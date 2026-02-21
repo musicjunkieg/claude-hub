@@ -476,6 +476,12 @@ func (h *Hub) handleClaudeOutput(sessionID string, hp *process.HeadlessProcess) 
 func (h *Hub) watchProjectsDirectory() {
 	projectDir := h.claudeProjectsDir
 
+	// Ensure directory exists
+	if err := os.MkdirAll(projectDir, 0755); err != nil {
+		log.Printf("Failed to create projects directory %s: %v", projectDir, err)
+		return
+	}
+
 	// Create fsnotify watcher for the directory
 	dirWatcher, err := fsnotify.NewWatcher()
 	if err != nil {
