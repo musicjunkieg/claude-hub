@@ -10,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	"claude-hub/internal/config"
 	"claude-hub/internal/process"
 	"claude-hub/internal/session"
 	"claude-hub/internal/watcher"
@@ -59,12 +60,7 @@ type BroadcastMessage struct {
 
 // NewHub creates a new Hub
 func NewHub() *Hub {
-	// Determine Claude projects directory
-	homeDir := os.Getenv("HOME")
-	if homeDir == "" {
-		homeDir = "/home/sprite"
-	}
-	claudeProjectsDir := filepath.Join(homeDir, ".claude", "projects", "-home-sprite")
+	cfg := config.Get()
 
 	h := &Hub{
 		sessions:          make(map[string]*session.Session),
@@ -72,7 +68,7 @@ func NewHub() *Hub {
 		processMgr:        process.NewManager(),
 		detector:          process.NewTerminalDetector(),
 		watchers:          make(map[string]*watcher.SessionWatcher),
-		claudeProjectsDir: claudeProjectsDir,
+		claudeProjectsDir: cfg.ClaudeProjectsDir,
 		register:          make(chan *Client),
 		unregister:        make(chan *Client),
 		broadcast:         make(chan *BroadcastMessage, 256),
@@ -478,11 +474,13 @@ func (h *Hub) handleClaudeOutput(sessionID string, hp *process.HeadlessProcess) 
 
 // watchProjectsDirectory watches the Claude projects directory for file changes
 func (h *Hub) watchProjectsDirectory() {
-	homeDir := os.Getenv("HOME")
-	if homeDir == "" {
-		homeDir = "/home/sprite"
+	projectDir := h.claudeProjectsDir
+
+	// Ensure directory exists
+	if err := os.MkdirAll(projectDir, 0755); err != nil {
+		log.Printf("Failed to create projects directory %s: %v", projectDir, err)
+		return
 	}
-	projectDir := filepath.Join(homeDir, ".claude", "projects", "-home-sprite")
 
 	// Create fsnotify watcher for the directory
 	dirWatcher, err := fsnotify.NewWatcher()
@@ -867,11 +865,7 @@ func (h *Hub) sendHistoryToClient(client *Client, claudeUUID string, isGeneratin
 	messages := []map[string]interface{}{}
 
 	// This is a simplified version - just read and parse the whole file
-	homeDir := os.Getenv("HOME")
-	if homeDir == "" {
-		homeDir = "/home/sprite"
-	}
-	filePath := filepath.Join(homeDir, ".claude", "projects", "-home-sprite", claudeUUID+".jsonl")
+	filePath := filepath.Join(h.claudeProjectsDir, claudeUUID+".jsonl")
 
 	file, err := os.Open(filePath)
 	if err != nil {

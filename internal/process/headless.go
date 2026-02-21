@@ -12,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	"claude-hub/internal/config"
 	"claude-hub/pkg/claude"
 )
 
@@ -56,7 +57,7 @@ func NewHeadlessProcess(sessionID, cwd, claudeSessionID string) (*HeadlessProces
 	}
 
 	if cwd == "" {
-		cwd = "/home/sprite"
+		cwd = config.Get().WorkDir
 	}
 
 	execCmd := exec.CommandContext(ctx, cmd[0], cmd[1:]...)

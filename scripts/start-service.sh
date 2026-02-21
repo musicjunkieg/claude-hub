@@ -9,7 +9,8 @@ if [ -f "$HOME/.sprite-config" ]; then
 fi
 
 # Set defaults if not already set
-export CLAUDE_PROJECTS_DIR="${CLAUDE_PROJECTS_DIR:-$HOME/.claude/projects/-home-sprite}"
+export CLAUDE_WORK_DIR="${CLAUDE_WORK_DIR:-$HOME}"
+export CLAUDE_PROJECTS_DIR="${CLAUDE_PROJECTS_DIR:-}"  # Computed from CLAUDE_WORK_DIR if empty
 export STATE_FILE="${STATE_FILE:-$HOME/.claude-hub/state.json}"
 export LOG_LEVEL="${LOG_LEVEL:-info}"
 export PORT="${PORT:-9090}"

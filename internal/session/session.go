@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"sync"
 	"time"
+
+	"claude-hub/internal/config"
 )
 
 // SessionState represents the state of a session
@@ -41,7 +43,7 @@ func NewSession(id string) *Session {
 		ID:           id,
 		State:        StateIdle,
 		LastActivity: time.Now(),
-		CWD:          "/home/sprite",
+		CWD:          config.Get().WorkDir,
 	}
 }
 
